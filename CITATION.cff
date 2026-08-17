@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+title: Physics-guided WHR-PV-storage microgrid pipeline
+message: Cite the IEEE TIA manuscript when available. Until then cite this repository.
+type: software
+authors:
+  - family-names: Chen
+    given-names: Jiying
+    email: jc2341@cam.ac.uk
+    affiliation: University of Cambridge
+license: MIT
+repository-code: https://github.com/jc2341-Cambridge/whr-pv-microgrid
+keywords:
+  - waste-heat recovery
+  - Stirling engine
+  - microgrid
+  - surrogate modelling
+  - IEEE TIA
