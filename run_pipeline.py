@@ -93,8 +93,7 @@ def main() -> None:
         "agent_augmented": augmented_metrics,
         "targets": TARGET_COLUMNS,
         "caveat": (
-            "Metrics on the public validation table confirm that the code path executes. "
-            "They are not the IEEE TIA manuscript headline numbers."
+            "Metrics on the public validation table confirm that the code path executes."
         ),
         "method_boundary": [
             "LLM/agent layer proposes and ranks operating cases",
@@ -118,7 +117,7 @@ def main() -> None:
     for name, fn, args in figure_jobs:
         try:
             fn(*args)
-        except Exception as exc:  # reviewer laptops may lack a 3-D backend
+        except Exception as exc:  # some environments lack a 3-D backend
             print(f"figure skipped ({name}): {exc}")
     print(json.dumps(metrics, indent=2))
 

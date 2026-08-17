@@ -1,8 +1,7 @@
 # Physics-guided WHR–PV–storage microgrid pipeline
 
-Companion code for an IEEE Transactions on Industry Applications (TIA) style
-study of **waste-heat recovery (WHR)** Stirling units coupled to a
-**PV–storage microgrid**.
+Public research code for **waste-heat recovery (WHR)** Stirling units coupled
+to a **PV–storage microgrid**.
 
 The numerical authority is experimental / solver-labelled operating data and a
 physics reviewer. Language-model agents, when used, **propose and rank
@@ -21,13 +20,12 @@ validation**. The remaining research data are **available on request** and
 
 | Supported | Not claimed |
 |---|---|
-| A closed, inspectable loop: data → physics review → bootstrap surrogate → agent ranking → confidence-aware dispatch | That public validation MAE/MAPE equals the manuscript table |
+| A closed, inspectable loop: data → physics review → bootstrap surrogate → agent ranking → confidence-aware dispatch | That public validation residuals are the study accuracy figures |
 | That coupling of charge/discharge-style storage with WHR output is an operational control problem, not a separable greedy rule | Wall-clock superiority over a commercial EMS |
 | That LLM/agent output is an auditable JSON protocol | That an LLM is a thermodynamic oracle |
-| That the public table is sufficient to **validate** the code | That the public table is the archival study collection |
+| That the public table is sufficient to **validate** the code | That the public table is the complete research collection |
 
-Treat `results/metrics.json` from a public run as a **validation artefact**,
-not as a citation number.
+`results/metrics.json` from a public run is a **validation artefact**.
 
 ---
 
@@ -47,7 +45,7 @@ whr-pv-microgrid/
 ├── agents.py                 Propose → review → score → label
 ├── llm_protocol.py           Machine-readable agent schema and trace
 ├── microgrid_dispatch.py     Weekly-commitment WHR–PV–storage policy
-├── make_figures.py           IEEE-style PNG/PDF writers
+├── make_figures.py           PNG/PDF figure writers
 ├── data/
 │   ├── DATA_STATEMENT.md     Released versus on-request data
 │   └── public/
@@ -102,20 +100,15 @@ python run_pipeline.py
 ## Data policy
 
 - **Released:** part of the operating-point table, for code validation.
-- **On request:** the remaining research data, from the corresponding author,
-  for academic review and non-commercial research only.
+- **On request:** the remaining research data, for non-commercial academic use.
 - **Not in this repository:** raw laboratory logs, the full solver oracle, and
   multi-hour campus traces.
 - **Commercial use is not permitted** for research data associated with this
-  study.
-
-If you are an IEEE TIA reviewer and need the study collection to check a
-table, email the corresponding author. Do not treat this public tree as the
-archival dataset.
+  project.
 
 ---
 
-## Design choices a careful reviewer should see
+## Design choices
 
 - **Labels ≠ language model.** `SolverLabelAgent` and the released table are
   the sources of `power` / `efficiency` for new queries.
@@ -125,16 +118,14 @@ archival dataset.
 - **Storage is coupled.** Dispatch commits pressure and speed for a week and
   then moves SOC. A separable “discharge the peak hours only” rule is not the
   controller.
-- **Validation metrics are not paper metrics.** `run_pipeline.py` writes this
-  caveat into `metrics.json` on every run.
+- **Validation metrics describe this public run.** `run_pipeline.py` writes
+  that caveat into `metrics.json` on every run.
 
 ---
 
 ## Citation
 
-Please cite the IEEE TIA manuscript when using the method. Use `CITATION.cff`
-once the paper has a DOI. Until then, cite this repository and the author
-list on the manuscript title page.
+Cite this repository. See `CITATION.cff`.
 
 ---
 

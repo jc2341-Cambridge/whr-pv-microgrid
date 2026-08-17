@@ -18,9 +18,8 @@ metering are **not** in this repository.
 
 ## How to obtain the remaining data
 
-The remaining research data are **available on request** from the
-corresponding author for non-commercial academic review and reproduction of
-the IEEE TIA manuscript only.
+The remaining research data are **available on request** for non-commercial
+academic use.
 
 Commercial use, redistribution, model training for a product, or scraping of
 on-request records is **not permitted**.
@@ -28,7 +27,6 @@ on-request records is **not permitted**.
 ## How to interpret validation metrics
 
 Numbers written to `results/metrics.json` after `python run_pipeline.py`
-confirm that the code path executes. They are **not** the manuscript headline
-KPIs. Do not cite validation MAE/MAPE as the paper result.
+confirm that the code path executes. They describe this public run.
 
 The procedure is in [`docs/validation.md`](../docs/validation.md).

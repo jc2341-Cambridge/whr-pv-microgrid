@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 title: Physics-guided WHR-PV-storage microgrid pipeline
-message: Cite the IEEE TIA manuscript when available. Until then cite this repository.
+message: Cite this repository.
 type: software
 authors:
   - family-names: Chen
@@ -14,4 +14,3 @@ keywords:
   - Stirling engine
   - microgrid
   - surrogate modelling
-  - IEEE TIA

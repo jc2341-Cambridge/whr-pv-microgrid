@@ -3,8 +3,7 @@
 This repository releases **part of the operating-point table** so that the
 source code can be validated. A successful run shows that the pipeline
 installs, splits data, fits the surrogate, records an agent trace, and writes
-dispatch and figure artefacts. It does **not** reproduce the IEEE TIA
-manuscript numerical tables.
+dispatch and figure artefacts.
 
 The remaining research data are available **on request** for non-commercial
 academic use. See [`DATA_USE.md`](../DATA_USE.md) and
@@ -64,8 +63,8 @@ Open `results/metrics.json` and confirm that:
 3. `baseline` and `agent_augmented` each contain power and efficiency residuals.
 4. `method_boundary` records that numeric labels do not come from an LLM.
 
-The residual values in that file are **validation outputs**. Do not cite them
-as manuscript headline MAE, MAPE, or efficiency error.
+The residual values in that file are **validation outputs** for this public
+run.
 
 ## Fixed seeds
 
@@ -86,6 +85,5 @@ as manuscript headline MAE, MAPE, or efficiency error.
 
 ## What this guide does not certify
 
-- Equality with the manuscript result tables
 - That the synthetic London-like PV and load traces are metered site data
 - That the public label path is a full second-order Stirling integration
