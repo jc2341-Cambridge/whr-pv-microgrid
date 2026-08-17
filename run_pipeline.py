@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from agents import run_multi_agent_augmentation
+from agents import run_multi_agent_augmentation, unused_oracle_cases
 from data_loader import (
     TARGET_COLUMNS,
     feature_target_arrays,
@@ -39,9 +39,9 @@ RESULT_DIR = HERE / "results"
 def fit_surrogate(train: pd.DataFrame, random_state: int) -> BootstrapSurrogate:
     x_train, y_train = feature_target_arrays(train)
     return BootstrapSurrogate(
-        n_estimators=40,
-        degree=2,
-        alpha=0.12,
+        n_estimators=90,
+        degree=3,
+        alpha=0.08,
         random_state=random_state,
         physics_agent=PhysicsConstraintAgent(),
     ).fit(x_train, y_train)
@@ -59,7 +59,8 @@ def main() -> None:
     y_base = baseline.predict(x_test)
     baseline_metrics = residual_metrics(y_test, y_base)
 
-    n_select = max(4, min(8, max(1, len(train) // 2)))
+    n_unused = len(unused_oracle_cases(train, oracle_pool))
+    n_select = max(4, min(16, n_unused if n_unused else max(1, len(train) // 2)))
     augmented_train, selected_cases = run_multi_agent_augmentation(
         train, baseline, n_select=n_select, oracle_reference=oracle_pool
     )
@@ -97,7 +98,7 @@ def main() -> None:
         ),
         "method_boundary": [
             "LLM/agent layer proposes and ranks operating cases",
-            "Numeric labels come from the released grid or the proxy-solver agent",
+            "Numeric labels come from unused released-grid rows, else the proxy-solver",
             "Hard device bounds stay in the physics reviewer, not in a QUBO penalty",
             "Dispatch uses surrogate mean and epistemic uncertainty jointly",
         ],

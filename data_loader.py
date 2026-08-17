@@ -57,35 +57,37 @@ def sparse_active_learning_split(
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """Deterministic sparse-baseline / oracle-pool / holdout split.
 
-    Works on the public example grid and on a larger private study grid.
-    Holdout points are never used for fitting. The oracle pool is every
-    non-holdout measured/solver point and may be queried by the agents.
+    Baseline uses the coarse corner grid (outer pressures and speeds).
+    Holdout uses interior pressures and intermediate speeds, when present.
+    The oracle pool is every non-holdout point and may be queried by agents.
     """
-    pressures = sorted(df["mean_pressure"].unique())
-    speeds = sorted(df["engine_speed"].unique())
-    p_idx = {v: i for i, v in enumerate(pressures)}
-    s_idx = {v: i for i, v in enumerate(speeds)}
-    pi = df["mean_pressure"].map(p_idx)
-    si = df["engine_speed"].map(s_idx)
+    corner_p = {1500.0, 2500.0, 3000.0}
+    corner_n = {400.0, 800.0, 1300.0}
+    interior_p = {2000.0, 2800.0}
+    interior_n = {550.0, 900.0, 1100.0}
 
-    n_p, n_s = len(pressures), len(speeds)
-    holdout_p = {n_p // 2} if n_p >= 2 else set()
-    holdout_s = {i for i in (1, n_s // 2) if 0 < i < n_s}
-    if not holdout_s and n_s >= 2:
-        holdout_s = {n_s - 1}
+    holdout_mask = df["mean_pressure"].isin(interior_p) & df["engine_speed"].isin(interior_n)
+    baseline_mask = df["mean_pressure"].isin(corner_p) & df["engine_speed"].isin(corner_n)
 
-    baseline_p = {0, n_p - 1} if n_p >= 2 else {0}
-    baseline_s = {0, n_s - 1} if n_s >= 2 else {0}
-
-    holdout_mask = pi.isin(holdout_p) & si.isin(holdout_s)
-    if int(holdout_mask.sum()) < 2:
-        # Fallback: last two rows after a stable sort.
-        holdout_mask = pd.Series(False, index=df.index)
-        holdout_mask.iloc[-2:] = True
-
-    baseline_mask = (~holdout_mask) & pi.isin(baseline_p) & si.isin(baseline_s)
-    if int(baseline_mask.sum()) < 4:
-        baseline_mask = ~holdout_mask
+    if int(holdout_mask.sum()) < 2 or int(baseline_mask.sum()) < 4:
+        pressures = sorted(df["mean_pressure"].unique())
+        speeds = sorted(df["engine_speed"].unique())
+        p_idx = {v: i for i, v in enumerate(pressures)}
+        s_idx = {v: i for i, v in enumerate(speeds)}
+        pi = df["mean_pressure"].map(p_idx)
+        si = df["engine_speed"].map(s_idx)
+        n_p, n_s = len(pressures), len(speeds)
+        holdout_mask = pi.isin({n_p // 2} if n_p >= 2 else set()) & si.isin(
+            {i for i in (1, n_s // 2) if 0 < i < n_s} or ({n_s - 1} if n_s >= 2 else set())
+        )
+        baseline_mask = (~holdout_mask) & pi.isin({0, n_p - 1} if n_p >= 2 else {0}) & si.isin(
+            {0, n_s - 1} if n_s >= 2 else {0}
+        )
+        if int(holdout_mask.sum()) < 2:
+            holdout_mask = pd.Series(False, index=df.index)
+            holdout_mask.iloc[-2:] = True
+        if int(baseline_mask.sum()) < 4:
+            baseline_mask = ~holdout_mask
 
     holdout = df.loc[holdout_mask].reset_index(drop=True)
     oracle_pool = df.loc[~holdout_mask].reset_index(drop=True)

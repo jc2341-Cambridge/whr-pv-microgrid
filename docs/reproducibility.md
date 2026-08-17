@@ -21,8 +21,9 @@ academic use.
 
 1. The physics reviewer admits only in-bound candidates.
 2. The critic ranks candidates by sparsity and bootstrap uncertainty.
-3. Labels for newly selected points come from the proxy-solver / oracle pool,
-   not from an LLM.
+3. Labels for newly selected points come from the released operating-point
+   table when the critic queries an unused public-grid row, otherwise from
+   the inverse-distance proxy. They never come from an LLM.
 4. The dispatch loop commits a weekly (pressure, speed) pair and updates
    storage SOC.
 
@@ -30,7 +31,7 @@ academic use.
 
 - That public-example MAPE equals the paper.
 - That the synthetic London-like PV/load traces are metered.
-- That the proxy-solver is a full second-order Stirling integration. The
-  manuscript study uses the complete private oracle; this demo uses
-  inverse-distance labels on the released points so the loop stays closed
-  without the withheld records.
+- That the public label path is a full second-order Stirling integration.
+  Unused released-grid rows keep their table values. Off-grid proposals, if
+  any, use inverse-distance labels so the loop stays closed without the
+  withheld records.

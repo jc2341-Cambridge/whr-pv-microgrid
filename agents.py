@@ -154,6 +154,36 @@ class SolverLabelAgent:
         return out
 
 
+def _row_keys(df: pd.DataFrame) -> list[tuple]:
+    return [tuple(np.round(row, 8)) for row in df[FEATURE_COLUMNS].to_numpy(float)]
+
+
+def unused_oracle_cases(train: pd.DataFrame, oracle_reference: pd.DataFrame) -> pd.DataFrame:
+    """Released grid rows that are available to query but were not in the baseline fit."""
+    used = set(_row_keys(train))
+    keys = _row_keys(oracle_reference)
+    keep = [i for i, key in enumerate(keys) if key not in used]
+    if not keep:
+        return oracle_reference.iloc[0:0].copy()
+    return oracle_reference.iloc[keep].reset_index(drop=True)
+
+
+def _attach_released_labels(selected: pd.DataFrame, released: pd.DataFrame) -> pd.DataFrame:
+    lookup = {key: i for i, key in enumerate(_row_keys(released))}
+    rows = []
+    for _, row in selected.iterrows():
+        key = tuple(np.round(row[FEATURE_COLUMNS].to_numpy(float), 8))
+        if key not in lookup:
+            continue
+        rec = released.iloc[lookup[key]].copy()
+        rec["agent_score"] = row.get("agent_score", np.nan)
+        rec["sparsity_score"] = row.get("sparsity_score", np.nan)
+        rec["uncertainty_score"] = row.get("uncertainty_score", np.nan)
+        rec["label_source"] = "released_grid"
+        rows.append(rec)
+    return pd.DataFrame(rows).reset_index(drop=True) if rows else selected.iloc[0:0].copy()
+
+
 def run_multi_agent_augmentation(
     train: pd.DataFrame,
     initial_model,
@@ -167,6 +197,9 @@ def run_multi_agent_augmentation(
     it drives both the sparsity reference and the proposal bounds. ``oracle_reference``
     is the high-fidelity solver/experiment that labels the selected query points.
     When omitted it falls back to ``train`` for backward compatibility.
+
+    Unused released-grid rows are queried first and keep their table labels.
+    Off-grid proposals are used only if the released pool is exhausted.
     """
     label_reference = train if oracle_reference is None else oracle_reference
     physics = physics or PhysicsConstraintAgent()
@@ -174,10 +207,26 @@ def run_multi_agent_augmentation(
     critic = CandidateCriticAgent()
     solver = SolverLabelAgent(physics_agent=physics)
 
-    proposed = proposer.propose(label_reference)
-    valid = physics.validate_candidates(proposed)
-    selected = critic.select(valid, train, initial_model, n_select=n_select)
-    labelled = solver.label(selected, label_reference)
+    unused = unused_oracle_cases(train, label_reference)
+    labelled_parts: list[pd.DataFrame] = []
+    n_left = int(n_select)
+
+    if len(unused) and n_left > 0:
+        grid_features = unused[FEATURE_COLUMNS].copy()
+        valid_grid = physics.validate_candidates(grid_features)
+        n_grid = min(n_left, len(valid_grid))
+        if n_grid:
+            picked = critic.select(valid_grid, train, initial_model, n_select=n_grid)
+            labelled_parts.append(_attach_released_labels(picked, unused))
+            n_left -= len(labelled_parts[-1])
+
+    if n_left > 0:
+        proposed = proposer.propose(label_reference)
+        valid = physics.validate_candidates(proposed)
+        selected = critic.select(valid, train, initial_model, n_select=n_left)
+        labelled_parts.append(solver.label(selected, label_reference))
+
+    labelled = pd.concat(labelled_parts, ignore_index=True) if labelled_parts else train.iloc[0:0].copy()
     augmented = pd.concat([train.assign(label_source="experiment"), labelled], ignore_index=True)
     return augmented, labelled
 

@@ -72,9 +72,10 @@ whr-pv-microgrid/
 3. **Surrogate.** A bootstrap polynomial-ridge ensemble predicts power and
    efficiency jointly and returns an epistemic standard deviation.
 4. **Agents.** A proposer samples the box; the physics reviewer drops
-   out-of-bound points; a critic ranks sparsity + uncertainty; a **solver-label
-   agent** (inverse-distance on the oracle pool in this public demo) writes
-   numeric labels. The LLM protocol in `llm_protocol.py` records *why* a region
+   out-of-bound points; a critic ranks sparsity + uncertainty. Unused
+   released-grid rows are queried first and keep their table labels. Off-grid
+   proposals, if the pool is exhausted, are labelled by inverse-distance
+   interpolation. The LLM protocol in `llm_protocol.py` records *why* a region
    was proposed. It does not write `power` or `efficiency`.
 5. **Dispatch.** Daily synthetic PV, load, and waste-heat traces feed a
    confidence-aware policy: residual load is tracked while a penalty on
