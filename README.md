@@ -8,10 +8,11 @@ The numerical authority is experimental / solver-labelled operating data and a
 physics reviewer. Language-model agents, when used, **propose and rank
 operating cases**. They do **not** generate power or efficiency labels.
 
-This public repository ships a **small example operating-point set** so the
-pipeline can be executed and audited. The complete research dataset is
-**available on request** and **may not be used for commercial purposes**.
-See [`DATA_USE.md`](DATA_USE.md) and
+This repository releases **part of the operating-point table for code
+validation**. The remaining research data are **available on request** and
+**may not be used for commercial purposes**. Follow the
+[validation guide](docs/validation.md). Data terms are in
+[`DATA_USE.md`](DATA_USE.md) and
 [`data/DATA_STATEMENT.md`](data/DATA_STATEMENT.md).
 
 ---
@@ -20,13 +21,13 @@ See [`DATA_USE.md`](DATA_USE.md) and
 
 | Supported | Not claimed |
 |---|---|
-| A closed, inspectable loop: data → physics review → bootstrap surrogate → agent ranking → confidence-aware dispatch | That the public-subset MAE/MAPE equals the manuscript table |
+| A closed, inspectable loop: data → physics review → bootstrap surrogate → agent ranking → confidence-aware dispatch | That public validation MAE/MAPE equals the manuscript table |
 | That coupling of charge/discharge-style storage with WHR output is an operational control problem, not a separable greedy rule | Wall-clock superiority over a commercial EMS |
 | That LLM/agent output is an auditable JSON protocol | That an LLM is a thermodynamic oracle |
-| That the public example set is enough to **run** the code | That the example set replaces the private study collection |
+| That the public table is sufficient to **validate** the code | That the public table is the archival study collection |
 
-Reviewers and automated agents should treat `results/metrics.json` from a
-public run as a **smoke-test artefact**, not as a citation number.
+Treat `results/metrics.json` from a public run as a **validation artefact**,
+not as a citation number.
 
 ---
 
@@ -39,7 +40,7 @@ whr-pv-microgrid/
 ├── DATA_USE.md               Non-commercial data terms
 ├── CITATION.cff
 ├── requirements.txt
-├── run_pipeline.py           One-command public demonstration
+├── run_pipeline.py           End-to-end validation run
 ├── data_loader.py            Public CSV I/O and deterministic split
 ├── physics_constraints.py    Bound / monotonicity reviewer
 ├── surrogate_models.py       Bootstrap polynomial ridge ensemble
@@ -48,13 +49,14 @@ whr-pv-microgrid/
 ├── microgrid_dispatch.py     Weekly-commitment WHR–PV–storage policy
 ├── make_figures.py           IEEE-style PNG/PDF writers
 ├── data/
-│   ├── DATA_STATEMENT.md     What is released vs withheld
+│   ├── DATA_STATEMENT.md     Released versus on-request data
 │   └── public/
-│       └── operating_points.csv   public example cases (enough to run)
+│       └── operating_points.csv   public validation table
 ├── docs/
-│   └── reproducibility.md    Seeds, claim boundary, reviewer checklist
+│   ├── validation.md         How to validate the code
+│   └── reproducibility.md    Seeds and claim boundary
 ├── tests/
-│   └── test_smoke.py         No-network unit checks
+│   └── test_smoke.py         Offline unit checks
 ├── results/                  Created by run_pipeline.py (gitignored)
 └── figures/                  Created by run_pipeline.py (gitignored)
 ```
@@ -64,8 +66,8 @@ whr-pv-microgrid/
 ## Method in one page
 
 1. **Operating evidence.** Each row is a `(T, p, N)` point with power (W) and
-   efficiency (fraction). The public file is a compact example grid spanning
-   heater temperature, mean pressure, and engine speed.
+   efficiency (fraction), spanning heater temperature, mean pressure, and
+   engine speed.
 2. **Split.** `sparse_active_learning_split` holds out interior points, keeps a
    coarse **baseline** training set, and treats all non-holdout points as an
    **oracle pool**. Holdout never enters fitting.
@@ -73,7 +75,7 @@ whr-pv-microgrid/
    efficiency jointly and returns an epistemic standard deviation.
 4. **Agents.** A proposer samples the box; the physics reviewer drops
    out-of-bound points; a critic ranks sparsity + uncertainty. Unused
-   released-grid rows are queried first and keep their table labels. Off-grid
+   released-table rows are queried first and keep their table labels. Off-grid
    proposals, if the pool is exhausted, are labelled by inverse-distance
    interpolation. The LLM protocol in `llm_protocol.py` records *why* a region
    was proposed. It does not write `power` or `efficiency`.
@@ -82,15 +84,12 @@ whr-pv-microgrid/
    surrogate uncertainty discourages over-confident WHR set-points. Storage SOC
    is updated with a power limit. PV/load traces are **synthetic**, not metered.
 
-The public demo uses a lighter ensemble (`n_estimators=40`, `degree=2`) so a
-reviewer laptop finishes in minutes. The manuscript study uses the full grid
-and a denser ensemble.
-
 ---
 
 ## Quick start
 
-Python 3.10+ recommended.
+Python 3.10+ recommended. The full procedure, expected artefacts, and
+acceptance checks are in [`docs/validation.md`](docs/validation.md).
 
 ```bash
 python -m pip install -r requirements.txt
@@ -98,43 +97,35 @@ python tests/test_smoke.py
 python run_pipeline.py
 ```
 
-Expected artefacts:
-
-- `results/metrics.json` — public-subset diagnostics plus an explicit caveat
-- `results/llm_agent_trace.json` — protocol and top-ranked case reasons
-- `figures/fig01_*.png` … dispatch figure (names follow `make_figures.py`)
-
 ---
 
-## Data policy (read this before citing numbers)
+## Data policy
 
-- **Released:** a small public example set of operating points, enough to run
-  the pipeline.
-- **Withheld:** the complete research collection, raw logs, the full solver
-  oracle, and multi-hour campus traces.
-- **Complete dataset:** made available **on request** to the corresponding
-  author for academic review and non-commercial research only.
-- **Commercial use is not permitted** for any research data associated with
-  this study, including the public subset if it is extracted from the paper
-  context and reused as a product.
+- **Released:** part of the operating-point table, for code validation.
+- **On request:** the remaining research data, from the corresponding author,
+  for academic review and non-commercial research only.
+- **Not in this repository:** raw laboratory logs, the full solver oracle, and
+  multi-hour campus traces.
+- **Commercial use is not permitted** for research data associated with this
+  study.
 
-If you are an IEEE TIA reviewer and need the full grid to check a table, email
-the corresponding author. Do not treat this GitHub/public tree as the archival
-dataset.
+If you are an IEEE TIA reviewer and need the study collection to check a
+table, email the corresponding author. Do not treat this public tree as the
+archival dataset.
 
 ---
 
 ## Design choices a careful reviewer should see
 
-- **Labels ≠ language model.** `SolverLabelAgent` and the oracle pool are the
-  only sources of `power` / `efficiency` for new queries.
+- **Labels ≠ language model.** `SolverLabelAgent` and the released table are
+  the sources of `power` / `efficiency` for new queries.
 - **Hard constraints stay classical.** Temperature, pressure, speed, and
   efficiency bounds are enforced by `PhysicsConstraintAgent`, not folded into a
   single unconstrained loss.
 - **Storage is coupled.** Dispatch commits pressure and speed for a week and
   then moves SOC. A separable “discharge the peak hours only” rule is not the
   controller.
-- **Public metrics are not paper metrics.** `run_pipeline.py` writes this
+- **Validation metrics are not paper metrics.** `run_pipeline.py` writes this
   caveat into `metrics.json` on every run.
 
 ---
@@ -150,5 +141,5 @@ list on the manuscript title page.
 ## Licence
 
 - Source code: MIT (`LICENSE`).
-- Data files under `data/`: [`DATA_USE.md`](DATA_USE.md) (non-commercial,
-  complete set on request).
+- Data files under `data/`: [`DATA_USE.md`](DATA_USE.md) (non-commercial;
+  remaining data on request).

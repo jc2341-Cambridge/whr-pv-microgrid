@@ -9,7 +9,6 @@ venv/
 .DS_Store
 Thumbs.db
 
-# Local search helper (uses the private full grid; not part of the public demo)
 _search_subset.py
 
 # Generated artefacts (recreated by run_pipeline.py)

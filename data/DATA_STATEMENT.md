@@ -2,9 +2,8 @@
 
 ## What is released
 
-`data/public/operating_points.csv` is a **small public example set** so that
-the pipeline can be executed and audited. It is not the full research
-collection used in the manuscript.
+`data/public/operating_points.csv` is the **public validation table**. It is
+released so that the code in this repository can be executed and checked.
 
 Columns: `source_temperature`, `source_temperature_c`, `mean_pressure`,
 `engine_speed`, `power`, `efficiency`.
@@ -13,21 +12,23 @@ Power is in watts. Efficiency is a fraction (not percent).
 
 ## What is not released
 
-Raw laboratory logs, the complete operating collection, the full solver
+Raw laboratory logs, the remaining operating collection, the full solver
 oracle table, multi-hour campus dispatch traces, and industrial heat-source
 metering are **not** in this repository.
 
-## How to obtain the complete dataset
+## How to obtain the remaining data
 
-The complete research dataset is **available on request** from the
+The remaining research data are **available on request** from the
 corresponding author for non-commercial academic review and reproduction of
 the IEEE TIA manuscript only.
 
 Commercial use, redistribution, model training for a product, or scraping of
-withheld records is **not permitted**.
+on-request records is **not permitted**.
 
-## How to interpret public-example metrics
+## How to interpret validation metrics
 
-Numbers written to `results/metrics.json` after `python run_pipeline.py` verify
-that the code path executes. They are **not** the manuscript headline KPIs.
-Do not cite public-example MAE/MAPE as the paper result.
+Numbers written to `results/metrics.json` after `python run_pipeline.py`
+confirm that the code path executes. They are **not** the manuscript headline
+KPIs. Do not cite validation MAE/MAPE as the paper result.
+
+The procedure is in [`docs/validation.md`](../docs/validation.md).

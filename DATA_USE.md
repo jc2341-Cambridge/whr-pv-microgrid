@@ -1,16 +1,16 @@
 # Data use terms
 
-The public operating-point file in this repository is released solely to let
-reviewers and readers **run the pipeline**.
+The public operating-point file in this repository is released for **code
+validation**.
 
 1. **Non-commercial.** The data may not be used for commercial products,
    consulting deliverables, paid datasets, or model weights intended for sale.
-2. **No redistribution of the withheld set.** If you later receive the complete
-   research dataset, you may not publish, scrape, or re-host it. Cite the paper
-   and keep the files private.
-3. **On request.** The complete dataset is made available on request to the
-   corresponding author for academic review and non-commercial research.
-4. **No warranty.** The public example set is a demonstration grid. It does not
+2. **No redistribution of on-request files.** If you later receive the
+   remaining research data, you may not publish, scrape, or re-host them. Cite
+   the paper and keep those files private.
+3. **On request.** The remaining research data are made available on request
+   to the corresponding author for academic review and non-commercial research.
+4. **No warranty.** The public table is for validating this code. It does not
    replace manufacturer maps or site-specific commissioning data.
 5. **Code vs data.** Source code is licensed under MIT (`LICENSE`). These data
    terms are stricter and control the CSV files under `data/`.

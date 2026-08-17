@@ -1,8 +1,4 @@
-"""Load the public operating-point subset and form an auditable train/holdout split.
-
-The public CSV is a small example set so the pipeline can be executed.
-It is not the manuscript training set.
-"""
+"""Load the public validation table and form an auditable train/holdout split."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -18,7 +14,7 @@ TARGET_COLUMNS = ["power", "efficiency"]
 
 
 def load_public_operating_data(path: str | Path = PUBLIC_DATA) -> pd.DataFrame:
-    """Load the released operating points (SI units already applied)."""
+    """Load the public validation operating points (SI units already applied)."""
     path = Path(path)
     if not path.is_file():
         raise FileNotFoundError(
