@@ -3,9 +3,9 @@
 ## Intended claim of this repository
 
 This package reproduces the **method**, not the manuscript's full numerical
-table. The public CSV is a 30% stratified sub-grid (36/120). Headline MAE,
-annual energy, and complementarity figures in the IEEE TIA submission use the
-complete research set, which is available on request for non-commercial
+table. The public CSV is a small example set so the code can be run. Headline
+MAE, annual energy, and complementarity figures in the IEEE TIA submission use
+the complete research set, which is available on request for non-commercial
 academic use.
 
 ## Fixed seeds
@@ -28,9 +28,9 @@ academic use.
 
 ## What a successful public run does **not** show
 
-- That public-subset MAPE equals the paper.
+- That public-example MAPE equals the paper.
 - That the synthetic London-like PV/load traces are metered.
 - That the proxy-solver is a full second-order Stirling integration. The
-  manuscript study uses the complete RK4 oracle; this demo uses
+  manuscript study uses the complete private oracle; this demo uses
   inverse-distance labels on the released points so the loop stays closed
-  without the withheld grid.
+  without the withheld records.

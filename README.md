@@ -8,10 +8,10 @@ The numerical authority is experimental / solver-labelled operating data and a
 physics reviewer. Language-model agents, when used, **propose and rank
 operating cases**. They do **not** generate power or efficiency labels.
 
-This public repository ships a **30% stratified subset** (36 of 120 operating
-points) so the pipeline can be executed and audited. The complete research
-dataset is **available on request** and **may not be used for commercial
-purposes**. See [`DATA_USE.md`](DATA_USE.md) and
+This public repository ships a **small example operating-point set** so the
+pipeline can be executed and audited. The complete research dataset is
+**available on request** and **may not be used for commercial purposes**.
+See [`DATA_USE.md`](DATA_USE.md) and
 [`data/DATA_STATEMENT.md`](data/DATA_STATEMENT.md).
 
 ---
@@ -23,7 +23,7 @@ purposes**. See [`DATA_USE.md`](DATA_USE.md) and
 | A closed, inspectable loop: data → physics review → bootstrap surrogate → agent ranking → confidence-aware dispatch | That the public-subset MAE/MAPE equals the manuscript table |
 | That coupling of charge/discharge-style storage with WHR output is an operational control problem, not a separable greedy rule | Wall-clock superiority over a commercial EMS |
 | That LLM/agent output is an auditable JSON protocol | That an LLM is a thermodynamic oracle |
-| That a 36-point release is enough to **run** the code | That 36 points replace the 120-point study grid |
+| That the public example set is enough to **run** the code | That the example set replaces the private study collection |
 
 Reviewers and automated agents should treat `results/metrics.json` from a
 public run as a **smoke-test artefact**, not as a citation number.
@@ -50,7 +50,7 @@ whr-pv-microgrid/
 ├── data/
 │   ├── DATA_STATEMENT.md     What is released vs withheld
 │   └── public/
-│       └── operating_points.csv   36 / 120 stratified points
+│       └── operating_points.csv   public example cases (enough to run)
 ├── docs/
 │   └── reproducibility.md    Seeds, claim boundary, reviewer checklist
 ├── tests/
@@ -64,8 +64,8 @@ whr-pv-microgrid/
 ## Method in one page
 
 1. **Operating evidence.** Each row is a `(T, p, N)` point with power (W) and
-   efficiency (fraction). The public file is a sub-grid of three heater
-   temperatures, three pressures, and four speeds.
+   efficiency (fraction). The public file is a compact example grid spanning
+   heater temperature, mean pressure, and engine speed.
 2. **Split.** `sparse_active_learning_split` holds out interior points, keeps a
    coarse **baseline** training set, and treats all non-holdout points as an
    **oracle pool**. Holdout never enters fitting.
@@ -107,9 +107,10 @@ Expected artefacts:
 
 ## Data policy (read this before citing numbers)
 
-- **Released:** 36 operating points, 30% of the 120-point study grid.
-- **Withheld:** the other 84 points, raw logs, full RK4 oracle, 8760 h campus
-  traces.
+- **Released:** a small public example set of operating points, enough to run
+  the pipeline.
+- **Withheld:** the complete research collection, raw logs, the full solver
+  oracle, and multi-hour campus traces.
 - **Complete dataset:** made available **on request** to the corresponding
   author for academic review and non-commercial research only.
 - **Commercial use is not permitted** for any research data associated with

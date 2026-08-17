@@ -21,9 +21,9 @@ from physics_constraints import PhysicsConstraintAgent  # noqa: E402
 from surrogate_models import BootstrapSurrogate  # noqa: E402
 
 
-def test_public_grid_is_thirty_percent() -> None:
+def test_public_example_set_is_runnable() -> None:
     df = load_public_operating_data()
-    assert len(df) == 36
+    assert len(df) == 40
     assert set(df["source_temperature"].unique()) == {773.15, 923.15, 1073.15}
     assert df[FEATURE_COLUMNS].duplicated().sum() == 0
 
@@ -62,7 +62,7 @@ def test_physics_reviewer_rejects_oob() -> None:
 
 
 if __name__ == "__main__":
-    test_public_grid_is_thirty_percent()
+    test_public_example_set_is_runnable()
     test_split_is_disjoint_and_nonempty()
     test_surrogate_fits_and_stays_physical()
     test_physics_reviewer_rejects_oob()

@@ -83,9 +83,8 @@ def main() -> None:
     dispatch.to_csv(RESULT_DIR / "confidence_aware_dispatch.csv", index=False)
 
     metrics = {
-        "release": "public-subset-30pct",
-        "n_public_cases": int(len(df)),
-        "n_full_study_cases_not_released": 120,
+        "release": "public-example-set",
+        "n_public_example_cases": int(len(df)),
         "n_train_cases": int(len(train)),
         "n_holdout_cases": int(len(test)),
         "n_agent_selected_cases": int(len(selected_cases)),
@@ -93,7 +92,7 @@ def main() -> None:
         "agent_augmented": augmented_metrics,
         "targets": TARGET_COLUMNS,
         "caveat": (
-            "Metrics on this public subset are for pipeline verification only. "
+            "Metrics on this public example set are for pipeline verification only. "
             "They are not the IEEE TIA manuscript headline numbers."
         ),
         "method_boundary": [

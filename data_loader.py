@@ -1,7 +1,7 @@
 """Load the public operating-point subset and form an auditable train/holdout split.
 
-The public CSV is a stratified 30% release of the study grid (36 of 120 points).
-It is sufficient to execute the pipeline. It is not the manuscript training set.
+The public CSV is a small example set so the pipeline can be executed.
+It is not the manuscript training set.
 """
 from __future__ import annotations
 
@@ -57,7 +57,7 @@ def sparse_active_learning_split(
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """Deterministic sparse-baseline / oracle-pool / holdout split.
 
-    Works on the public 36-point grid and on the full 120-point study grid.
+    Works on the public example grid and on a larger private study grid.
     Holdout points are never used for fitting. The oracle pool is every
     non-holdout measured/solver point and may be queried by the agents.
     """
